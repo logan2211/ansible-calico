@@ -1,0 +1,72 @@
+---
+- name: Configure sysctl settings for Calico ip routing
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    sysctl_set: "{{ item.set|default('yes') }}"
+    state: "{{ item.state|default('present') }}"
+    reload: "{{ item.reload|default('yes') }}"
+  with_items: calico_kernel_options
+  tags:
+    - calico-kernel-sysctl
+
+- name: Set calico friendly qemu (libvirt) config
+  template:
+    src: "qemu.conf.j2"
+    dest: "/etc/libvirt/qemu.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: Restart libvirt-bin
+  tags:
+    - calico-kvm
+    - calico-libvirt
+
+- name: Place the init script
+  template:
+    src: "calico-upstart-init.j2"
+    dest: "/etc/init/calico-felix.conf"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  notify:
+    - Reload init scripts
+    - Restart calico felix
+  tags:
+    - upstart-init
+    - calico-init
+
+- name: Ensure calico config directory exists
+  file:
+    path: "{{ calico_config_dir }}"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  tags:
+    - calico-felix-config
+
+- name: Drop calico felix.cfg file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: Restart calico felix
+  with_items:
+    - { src: "felix.cfg.j2", dest: "{{ calico_config_dir }}/felix.cfg" }
+  tags:
+    - calico-felix-config
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Add calico felix to boot services
+  service:
+   name: "calico-felix"
+   enabled: yes
+   state: started
+  tags:
+    - upstart-init
+    - calico-init

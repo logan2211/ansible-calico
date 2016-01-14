@@ -1,0 +1,5 @@
+---
+- include: calico_pre_install.yml
+- include: calico_install.yml
+- include: calico_compute_post_install.yml
+  when: inventory_hostname in groups['compute_hosts']

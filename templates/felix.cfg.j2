@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+
+[global]
+DefaultEndpointToHostAction = {{ calico_felix_endpointtohostaction }}
+{% if calico_felix_logging == "syslog" %}
+LogSeverityFile = NONE
+LogSeveritySys = WARNING
+{% endif %}
+{% if calico_felix_hostname is defined %}
+FelixHostname = {{ calico_felix_hostname }}
+{% endif %}

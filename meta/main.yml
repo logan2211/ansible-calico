@@ -1,0 +1,22 @@
+galaxy_info:
+  author: logan
+  description: Installation projectcalico networking
+  license: Apache2
+  min_ansible_version: 1.6.6
+  platforms:
+    - name: Ubuntu
+      versions:
+        - trusty
+  categories:
+    - cloud
+    - development
+    - openstack
+dependencies:
+  - role: etcd
+    etcd_install_type: proxy
+    tags:
+      - calico-etcd
+  - role: bird
+    when: inventory_hostname in groups['compute_hosts']
+    tags:
+      - calico-bird

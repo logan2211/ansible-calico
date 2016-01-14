@@ -1,0 +1,33 @@
+calico_gpg_keys:
+  - key_name: 'projectcalico'
+    keyserver: 'hkp://keyserver.ubuntu.com:80'
+    fallback_keyserver: 'hkp://p80.pool.sks-keyservers.net:80'
+    hash_id: '0x67d7e35b3d40a6a7'
+
+calico_apt_repo_branch: stable
+calico_apt_repo_url: "http://ppa.launchpad.net/project-calico/{{ calico_apt_repo_branch }}/ubuntu"
+calico_apt_repo:
+  repo: "deb {{ calico_apt_repo_url }} {{ ansible_distribution_release }} main"
+  state: "present"
+
+calico_felix_endpointtohostaction: RETURN
+calico_felix_logging: syslog
+calico_config_dir: /etc/calico
+
+calico_kernel_options:
+  - { key: 'net.ipv4.ip_forward', value: 1 }
+  - { key: 'net.ipv6.conf.all.forwarding', value: 1 }
+  - { key: "net.ipv6.conf.{{ ansible_default_ipv6['interface'] | default('bond0') }}.accept_ra", value: 2 }
+
+calico_apt_packages:
+  - etcd
+
+calico_pip_packages:
+  - calico
+  - networking-calico
+  - python-etcd
+
+#defaults needed from neutron role
+neutron_venv_enabled: true
+neutron_venv_tag: "{{ openstack_release }}"
+neutron_venv_bin: "/openstack/venvs/neutron-{{ neutron_venv_tag }}/bin"
