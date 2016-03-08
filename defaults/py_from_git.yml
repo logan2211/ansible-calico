@@ -1,8 +1,8 @@
 #for python wheel build
 calico_git_repo: https://github.com/projectcalico/calico
-calico_git_install_branch: 1.2.2
+calico_git_install_branch: 1.3.1
 calico_git_dest: "/opt/calico_{{ calico_git_install_branch | replace('/', '_') }}"
 
 networking_calico_git_repo: https://git.openstack.org/openstack/networking-calico
-networking_calico_git_install_branch: fe5a2dd476a028d11722f7e520577b17c4b49dc5
+networking_calico_git_install_branch: 32ed4d234c9a79ab91e99715836a492952efe92e
 networking_calico_git_dest: "/opt/networking_calico_{{ networking_calico_git_install_branch | replace('/', '_') }}"
