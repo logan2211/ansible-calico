@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+{% if neutron_venv_enabled | bool %}
+{% set dhcp_agent_path = neutron_venv_bin ~ '/calico-dhcp-agent' %}
+{% else %}
+{% set dhcp_agent_path = '/usr/local/bin/calico-dhcp-agent' %}
+{% endif %}
+
+# vim:set ft=upstart ts=2 et:
+description "Calico DHCP agent"
+author "Neil Jerram <neil@projectcalico.org>"
+
+start on stopped rc RUNLEVEL=[2345]
+stop on runlevel [!2345]
+
+limit nofile 32000 32000
+
+respawn
+respawn limit 5 10
+
+exec {{ dhcp_agent_path }} --config-file /etc/neutron/neutron.conf

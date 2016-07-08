@@ -22,16 +22,24 @@
     - calico-kvm
     - calico-libvirt
 
-- name: Place the init script
+- name: Place the init scripts
   template:
-    src: "calico-upstart-init.j2"
-    dest: "/etc/init/calico-felix.conf"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     mode: "0644"
     owner: "root"
     group: "root"
+  with_items:
+    - service_name: calico-felix
+      src: calico-felix-upstart-init.j2
+      dest: /etc/init/calico-felix.conf
+    - service_name: calico-dhcp-agent
+      src: calico-dhcp-agent-upstart-init.j2
+      dest: /etc/init/calico-dhcp-agent.conf
   notify:
     - Reload init scripts
-    - Restart calico felix
+    - Restart calico-felix
+    - Restart calico-dhcp-agent
   tags:
     - upstart-init
     - calico-init
@@ -53,7 +61,7 @@
     owner: "root"
     group: "root"
     mode: "0644"
-  notify: Restart calico felix
+  notify: Restart calico-felix
   with_items:
     - { src: "felix.cfg.j2", dest: "{{ calico_config_dir }}/felix.cfg" }
   tags:
@@ -64,9 +72,12 @@
 
 - name: Add calico felix to boot services
   service:
-   name: "calico-felix"
+   name: "{{ item }}"
    enabled: yes
    state: started
+  with_items:
+    - calico-felix
+    - calico-dhcp-agent
   tags:
     - upstart-init
     - calico-init

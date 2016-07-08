@@ -2,9 +2,14 @@
 - name: Reload init scripts
   shell: initctl reload-configuration
 
-- name: Restart calico felix
+- name: Restart calico-felix
   service:
    name: "calico-felix"
+   state: restarted
+
+- name: Restart calico-dhcp-agent
+  service:
+   name: "calico-dhcp-agent"
    state: restarted
 
 - name: Restart libvirt-bin
