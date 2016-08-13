@@ -67,6 +67,27 @@
   tags:
     - calico-felix-config
 
+- name: Ensure Neutron rootwrap.d exists
+  file:
+    path: "/etc/neutron/rootwrap.d"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  tags:
+    - neutron-rootwrap-config
+
+- name: Drop neutron dhcp rootwrap filter
+  copy:
+    src: "rootwrap.d/dhcp.filters"
+    dest: "/etc/neutron/rootwrap.d/dhcp.filters"
+    owner: "root"
+    group: "root"
+  notify:
+    - Restart calico-dhcp-agent
+  tags:
+    - neutron-rootwrap-config
+
 - name: Flush handlers
   meta: flush_handlers
 
