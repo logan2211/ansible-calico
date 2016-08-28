@@ -55,15 +55,20 @@
     - calico-felix-config
 
 - name: Drop calico felix.cfg file
-  template:
+  config_template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: "root"
     group: "root"
     mode: "0644"
+    config_overrides: "{{ item.config_overrides }}"
+    config_type: "{{ item.config_type }}"
   notify: Restart calico-felix
   with_items:
-    - { src: "felix.cfg.j2", dest: "{{ calico_config_dir }}/felix.cfg" }
+    - src: "felix.cfg.j2"
+      dest: "{{ calico_config_dir }}/felix.cfg"
+      config_overrides: "{{ calico_felix_conf_overrides }}"
+      config_type: 'ini'
   tags:
     - calico-felix-config
 

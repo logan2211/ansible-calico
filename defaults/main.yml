@@ -31,3 +31,5 @@ calico_pip_packages:
 neutron_venv_enabled: true
 neutron_venv_tag: "{{ openstack_release }}"
 neutron_venv_bin: "/openstack/venvs/neutron-{{ neutron_venv_tag }}/bin"
+
+calico_felix_conf_overrides: {}
